@@ -29,5 +29,5 @@ def psi():
     return StreamingResponse(generator())
 
 
-if __name__=='__main__':
-    uvicorn.run('fastapi_app:app', reload=True)
+# if __name__=='__main__':
+#     uvicorn.run('fastapi_app:app', reload=True)

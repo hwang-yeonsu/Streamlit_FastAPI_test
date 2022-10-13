@@ -38,7 +38,7 @@ def call_api(path: str,
 ## Lending page
 st.title('Federated Learning')
 with st.expander('Please input your server url path.', expanded=True):
-    # https://jsonplaceholder.typicode.com/todos/1
+    # https://jsonplaceholder.typicode.com/todos/1  http://localhost:8000
     PATH = st.text_input('e.g) https://jsonplaceholder.typicode.com/todos/1')
     if(not PATH):
         st.stop()
@@ -51,57 +51,50 @@ with st.expander('Please input your server url path.', expanded=True):
 '\n'
 
 
-
-
-
-
-
-def test(x):
-    print(x)
-
-a = st.button('a test', key='a', on_click=test, args=('a test',))
-b = st.button('b test', key='b', on_click=test, args=('b test',))
-c = st.text_input('asd', key='c')
-st.session_state.d = 'aaa'
-
-st.session_state
-
-
-
-
-
-
-
-
 ## menu tabs
 tab_list = ['/root', '/psi', '/define-model']
 tab1, tab2, tab3 = st.tabs(tab_list)
 
 with tab1:
-    st.header("Root")
+    st.header('Root')
     st.write('''
         _some docs..._
     ''')
-    btn = st.button('RUN', key='root')
-    if(btn):
-        st.write('Status:', call_api('/').json())
-    st.stop()
+    btn = st.button('Run', key='tab1')
+    st.write('Status:')
 
+    key = 'root'
+    with st.empty():
+        if(key in st.session_state):
+            st.write(st.session_state[key])
+        if(btn):
+            res = call_api('/').json()
+            st.write(res)
+            st.session_state[key] = res
 
 with tab2:
     st.header("PSI")
     st.write('''
         _some docs..._
     ''')
-    if(st.button('RUN', key='psi')):
-        with call_api('/psi', stream=True) as res:
-            for chunk in res.iter_lines(chunk_size=1):
-                st.write(chunk.decode('utf-8'))
+    btn = st.button('Run', key='tab2')
 
+    key = 'psi'
+    with st.empty():
+        if(key in st.session_state):
+            st.write(st.session_state[key])
+        if(btn):
+            res = ''
+            with call_api('/psi', stream=True) as response:
+                for chunk in response.iter_lines(chunk_size=1):
+                    res += chunk.decode('utf-8') + '\n\n'
+                    st.write(res)
+            st.session_state[key] = res
+                
 
 with tab3:
-  st.header("Defind Model")
-  st.image("https://static.streamlit.io/examples/owl.jpg", width=200)
+    st.header("Defind Model")
+    st.image("https://static.streamlit.io/examples/owl.jpg", width=200)
 
 
 
